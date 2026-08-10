@@ -105,6 +105,36 @@ def create_transaction(db: db_dependency, user: user_dependency, transaction: Tr
 
 
 
+# filter transactions
+@app.get("/transactions/filter", response_model=List[TransactionResponse])
+def filter_transactions(
+    db: db_dependency,
+    user: user_dependency,
+    type: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    minimum_amount: Optional[float] = Query(None),
+    maximum_amount: Optional[float] = Query(None)
+):
+
+    query = db.query(TransactionModel).filter(
+        TransactionModel.owner_id == user.get("id")
+    )
+
+    if type:
+        query = query.filter(TransactionModel.type == type)
+
+    if category:
+        query = query.filter(TransactionModel.category == category)
+
+    if minimum_amount:
+        query = query.filter(TransactionModel.amount >= minimum_amount)
+
+    if maximum_amount:
+        query = query.filter(TransactionModel.amount <= maximum_amount)
+
+    return query.all()
+
+
 
 # view transaction by id
 @app.get("/transactions/{transaction_id}", response_model=TransactionResponse)
@@ -168,32 +198,3 @@ def delete_transaction(transaction_id: int, db: db_dependency, user: user_depend
 
     return {"message": "Transaction deleted successfully"}
 
-
-# filter transactions
-@app.get("/transactions/filter", response_model=List[TransactionResponse])
-def filter_transactions(
-    db: db_dependency,
-    user: user_dependency,
-    type: Optional[str] = Query(None),
-    category: Optional[str] = Query(None),
-    minimum_amount: Optional[float] = Query(None),
-    maximum_amount: Optional[float] = Query(None)
-):
-
-    query = db.query(TransactionModel).filter(
-        TransactionModel.owner_id == user.get("id")
-    )
-
-    if type:
-        query = query.filter(TransactionModel.type == type)
-
-    if category:
-        query = query.filter(TransactionModel.category == category)
-
-    if minimum_amount:
-        query = query.filter(TransactionModel.amount >= minimum_amount)
-
-    if maximum_amount:
-        query = query.filter(TransactionModel.amount <= maximum_amount)
-
-    return query.all()
