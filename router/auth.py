@@ -15,7 +15,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 OAuth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/login")
 
-SECRET_KEY = 'your-secret-key'
+SECRET_KEY = '576cf445041c6750f0608727cf214a53822d90fb0508457f47788317994b9180'
 ALGORITHM = 'HS256'
 
 
